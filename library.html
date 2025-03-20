@@ -12,58 +12,79 @@
         .reserved { background-color: #ff6666; color: white; }
         .status-circle { width: 20px; height: 20px; border-radius: 50%; position: absolute;
                          top: 5px; right: 5px; }
+        #time-left { font-size: 20px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h2>도서관 좌석 예약</h2>
     <div id="seats">
-        <div class="seat" id="seat1" onclick="toggleSeat(this)"><span class="status-circle" id="circle1" style="background-color: red;"></span>1</div>
-        <div class="seat" onclick="toggleSeat(this)">2</div>
-        <div class="seat" onclick="toggleSeat(this)">3</div>
-        <div class="seat" onclick="toggleSeat(this)">4</div>
-        <div class="seat" onclick="toggleSeat(this)">5</div>
-        <div class="seat" onclick="toggleSeat(this)">6</div>
+        <div class="seat" id="seat1"><span class="status-circle" id="circle1" style="background-color: red;"></span>1</div>
+        <div class="seat" id="seat2"><span class="status-circle" id="circle2" style="background-color: red;"></span>2</div>
+        <div class="seat" id="seat3"><span class="status-circle" id="circle3" style="background-color: red;"></span>3</div>
+        <div class="seat" id="seat4"><span class="status-circle" id="circle4" style="background-color: red;"></span>4</div>
+        <div class="seat" id="seat5"><span class="status-circle" id="circle5" style="background-color: red;"></span>5</div>
+        <div class="seat" id="seat6"><span class="status-circle" id="circle6" style="background-color: red;"></span>6</div>
     </div>
     
     <div id="buttons">
-        <button onclick="setSeat()">자리 있음 설정</button>
-        <button onclick="setSeatLeft(15)">자리 비움 15분</button>
-        <button onclick="setLunch(60)">점심 1시간</button>
+        <button onclick="setSeat(1)">자리 있음 설정</button>
+        <button onclick="setSeatLeft(1, 15)">자리 비움 15분</button>
+        <button onclick="setLunch(1, 60)">점심 1시간</button>
     </div>
     
+    <div id="time-left">남은 시간: 0분 0초</div>
+    
     <script>
-        let seatOccupied = false;
-        let seatLeft = false;
-        let lunchSet = false;
-        let remainingTime = 0;
+        let seatStatus = {};
+        let timers = {};
         let timeDisplayInterval;
 
-        function setSeat() {
-            seatOccupied = true;
-            document.getElementById('circle1').style.backgroundColor = 'green';
+        function setSeat(seatId) {
+            clearTimeout(timers[seatId]);
+            seatStatus[seatId] = { occupied: true, time: 60 * 60 };
+            document.getElementById(`circle${seatId}`).style.backgroundColor = 'green';
+            startTimer(seatId);
         }
 
-        function setSeatLeft(minutes) {
-            if (seatOccupied) {
-                seatLeft = true;
-                document.getElementById('circle1').style.backgroundColor = 'yellow';
-                setTimeout(autoReturn, minutes * 60 * 1000);
+        function setSeatLeft(seatId, minutes) {
+            if (seatStatus[seatId]?.occupied) {
+                seatStatus[seatId].time = minutes * 60;
+                document.getElementById(`circle${seatId}`).style.backgroundColor = 'yellow';
+                startTimer(seatId);
             }
         }
 
-        function setLunch(minutes) {
-            if (seatOccupied && !lunchSet) {
-                lunchSet = true;
-                document.getElementById('circle1').style.backgroundColor = 'orange';
-                setTimeout(autoReturn, minutes * 60 * 1000);
+        function setLunch(seatId, minutes) {
+            if (seatStatus[seatId]?.occupied) {
+                seatStatus[seatId].time = minutes * 60;
+                document.getElementById(`circle${seatId}`).style.backgroundColor = 'orange';
+                startTimer(seatId);
             }
         }
 
-        function autoReturn() {
-            seatOccupied = false;
-            seatLeft = false;
-            lunchSet = false;
-            document.getElementById('circle1').style.backgroundColor = 'red';
+        function autoReturn(seatId) {
+            seatStatus[seatId] = { occupied: false, time: 0 };
+            document.getElementById(`circle${seatId}`).style.backgroundColor = 'red';
+            updateTimeDisplay();
+        }
+
+        function startTimer(seatId) {
+            clearInterval(timeDisplayInterval);
+            timeDisplayInterval = setInterval(() => {
+                if (seatStatus[seatId]?.time > 0) {
+                    seatStatus[seatId].time--;
+                    updateTimeDisplay();
+                } else {
+                    autoReturn(seatId);
+                }
+            }, 1000);
+        }
+
+        function updateTimeDisplay() {
+            const activeSeat = 1;
+            const minutes = Math.floor(seatStatus[activeSeat]?.time / 60) || 0;
+            const seconds = seatStatus[activeSeat]?.time % 60 || 0;
+            document.getElementById('time-left').innerHTML = `남은 시간: ${minutes}분 ${seconds}초`;
         }
     </script>
 </body>
