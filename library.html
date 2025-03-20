@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서관 좌석 예약</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .seat { width: 80px; height: 80px; margin: 10px; display: inline-block;
+                background-color: #ddd; line-height: 80px; font-size: 20px;
+                cursor: pointer; border-radius: 10px; position: relative; }
+        .reserved { background-color: #ff6666; color: white; }
+        .status-circle { width: 20px; height: 20px; border-radius: 50%; position: absolute;
+                         top: 5px; right: 5px; }
+    </style>
+</head>
+<body>
+    <h2>도서관 좌석 예약</h2>
+    <div id="seats">
+        <div class="seat" id="seat1" onclick="toggleSeat(this)"><span class="status-circle" id="circle1" style="background-color: red;"></span>1</div>
+        <div class="seat" onclick="toggleSeat(this)">2</div>
+        <div class="seat" onclick="toggleSeat(this)">3</div>
+        <div class="seat" onclick="toggleSeat(this)">4</div>
+        <div class="seat" onclick="toggleSeat(this)">5</div>
+        <div class="seat" onclick="toggleSeat(this)">6</div>
+    </div>
+    
+    <div id="buttons">
+        <button onclick="setSeat()">자리 있음 설정</button>
+        <button onclick="setSeatLeft(15)">자리 비움 15분</button>
+        <button onclick="setLunch(60)">점심 1시간</button>
+    </div>
+    
+    <script>
+        let seatOccupied = false;
+        let seatLeft = false;
+        let lunchSet = false;
+        let remainingTime = 0;
+        let timeDisplayInterval;
+
+        function setSeat() {
+            seatOccupied = true;
+            document.getElementById('circle1').style.backgroundColor = 'green';
+        }
+
+        function setSeatLeft(minutes) {
+            if (seatOccupied) {
+                seatLeft = true;
+                document.getElementById('circle1').style.backgroundColor = 'yellow';
+                setTimeout(autoReturn, minutes * 60 * 1000);
+            }
+        }
+
+        function setLunch(minutes) {
+            if (seatOccupied && !lunchSet) {
+                lunchSet = true;
+                document.getElementById('circle1').style.backgroundColor = 'orange';
+                setTimeout(autoReturn, minutes * 60 * 1000);
+            }
+        }
+
+        function autoReturn() {
+            seatOccupied = false;
+            seatLeft = false;
+            lunchSet = false;
+            document.getElementById('circle1').style.backgroundColor = 'red';
+        }
+    </script>
+</body>
+</html>
