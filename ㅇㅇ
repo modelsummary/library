@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서관 좌석 예약</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .seat { width: 80px; height: 80px; margin: 10px; display: inline-block;
+                background-color: #ddd; line-height: 80px; font-size: 20px;
+                cursor: pointer; border-radius: 10px; }
+        .reserved { background-color: #ff6666; color: white; }
+    </style>
+</head>
+<body>
+    <h2>도서관 좌석 예약</h2>
+    <div id="seats">
+        <div class="seat" onclick="toggleSeat(this)">1</div>
+        <div class="seat" onclick="toggleSeat(this)">2</div>
+        <div class="seat" onclick="toggleSeat(this)">3</div>
+        <div class="seat" onclick="toggleSeat(this)">4</div>
+        <div class="seat" onclick="toggleSeat(this)">5</div>
+        <div class="seat" onclick="toggleSeat(this)">6</div>
+    </div>
+    <script>
+        function toggleSeat(seat) {
+            seat.classList.toggle("reserved");
+        }
+    </script>
+</body>
+</html>
